@@ -2,7 +2,7 @@ import datetime
 from flask_restful import abort
 from src.db_methods import driver_exists, vehicle_exists
 
-
+# converts the string to datetime
 def transfer_date(raw_date: str) -> datetime.date:
     date_obj = datetime.datetime.strptime(raw_date, '%d-%m-%Y').date()
     return date_obj

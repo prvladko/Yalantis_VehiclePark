@@ -49,7 +49,7 @@ def vehicle_exists(vehicle_id: int) -> bool:
 
 
 def delete_vehicle_by_id(vehicle_id: int):
-    db.session.query(Driver).filter(Vehicle.id == vehicle_id).delete()
+    db.session.query(Vehicle).filter(Vehicle.id == vehicle_id).delete()
     db.session.commit()
 
 
@@ -82,13 +82,24 @@ def find_drivers(filters: dict):
 
 
 def find_vehicles(filters: dict):  # just for testing
-    pass
+    q = db.session.query(Vehicle).filter(Vehicle.make.like(f'%{filters["make"]}%'),
+                                         Vehicle.model.like(f'%{filters["model"]}%'),
+                                         Vehicle.plate_number.like(f'%{filters["plate_number"]}%'))
+    if filters['start_date[gte]']:
+        q = q.filter(Vehicle.start_date >= filters['start_date[gte]'])
+    if filters['start_date[lte]']:
+        q = q.filter(Vehicle.start_date <= filters['start_date[lte]'])
+
+    if filters['end_date[gte]']:
+        q = q.filter(Vehicle.end_date >= filters['end_date[gte]'])
+    if filters['end_date[lte]']:
+        q = q.filter(Vehicle.end_date <= filters['end_date[lte]'])
+    return q.all()
 
 
 def delete_all_drivers():
     db.session.query(Driver).delete()
     db.session.commit()
-
 
 def delete_all_vehicles():
     db.session.query(Vehicle).delete()
