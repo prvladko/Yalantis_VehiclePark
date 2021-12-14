@@ -1,20 +1,29 @@
 from flask import Flask
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
-from src.config import Configuration
 
-app = Flask(__name__)
+# from src.config import Configuration
 
-
-@app.route('/')
-def home():
-    return '<h1>Home page!</h1>'
+db = SQLAlchemy()
 
 
-app = Flask(__name__)
-app.config.from_object(Configuration)
+def create_app(Configuration):
+    app = Flask(__name__)
+    app.config.from_object(Configuration)
+    db.init_app(app)
+    api = Api(app)
 
-if __name__ == '__main__':
-    app.run(debug=True)
-api = Api(app)
-db = SQLAlchemy(app)
+    import src.views as views
+    api.add_resource(views.CreateDriver, '/drivers/driver/')
+    api.add_resource(views.CreateVehicle, '/vehicles/vehicle/')
+    api.add_resource(views.Driver, '/drivers/driver/<driver_id>/')
+    api.add_resource(views.Vehicle, '/vehicles/vehicle/<vehicle_id>')
+    api.add_resource(views.Drivers, '/drivers/driver/')
+    api.add_resource(views.Vehicles, '/vehicles/vehicle/')
+
+    api.add_resource(views.FindDriver, '/drivers/driver/search')
+    # api.add_resource(views.FindVehicle, '/vehicles/vehicle/search')  # no need, just for test
+
+    api.add_resource(views.Home, '/')
+
+    return app

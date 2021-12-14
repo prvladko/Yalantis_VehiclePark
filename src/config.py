@@ -1,16 +1,13 @@
-class Configuration(object):
-    DEBUG = True
+class ProdConfiguration(object):
     SECRET_KEY = 'TEST_SECRET_SECRET_KEY'
-    # Чтоб не выводило предупреждение при запуске сервера
+    # To avoid displaying a warning when the server starts
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_DATABASE_URI = 'sqlite:///data.db'
+
+
+class TestConfiguration(object):
+    DEBUG = True
     SQLALCHEMY_ECHO = True
-
-
-# class TestConfiguration(object):
-#     DEBUG = True
-#     SECRET_KEY = 'TEST_SECRET_SECRET_KEY'
-#     # Чтоб не выводило предупреждение при запуске сервера
-#     SQLALCHEMY_TRACK_MODIFICATIONS = False
-#     SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
-#
+    SECRET_KEY = 'TEST_SECRET_SECRET_KEY'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
