@@ -68,8 +68,8 @@ class CreateVehicle(Resource):
             return {"message": {
                 "updated_at": f'{e}\nThe date must be in the format: "%d-%m-%Y"\n Example: "14-12-2021"'}}, 400
 
-        id_ = db_methods.add_vehicle(make, model, plate_number, created_at, updated_at)
-        return {"message": {'id': id_, 'make': make, 'model': model, 'plate_number': plate_number,
+        vehicle_id = db_methods.add_vehicle(make, model, plate_number, created_at, updated_at)
+        return {"message": {'id': vehicle_id, 'make': make, 'model': model, 'plate_number': plate_number,
                             'created_at': str(created_at), 'updated_at': str(updated_at)}}, 201
 
 
@@ -78,8 +78,9 @@ class Drivers(Resource):
         drivers = db_methods.get_all_drivers()
         drivers_list = []
         for driver in drivers:
-            drivers_list.append({'id': driver.id, 'first_name': driver.first_name, 'last_name': driver.last_name,
-                                 'created_at': str(driver.start_date), 'updated_at': str(driver.end_date)})
+            # drivers_list.append({'id': driver.id, 'first_name': driver.first_name, 'last_name': driver.last_name,
+            #                      'created_at': str(driver.start_date), 'updated_at': str(driver.end_date)})
+            drivers_list.append({'id': driver.id, 'first_name': driver.first_name, 'last_name': driver.last_name})
         return {"message": {"drivers": drivers_list}}, 200
 
 
@@ -93,15 +94,24 @@ class Driver(Resource):
         else:
             return {"message": {"driver": f"Driver with id={driver_id} not found"}}, 400
 
+    def delete(self, driver_id):
+        if db_methods.driver_exists(driver_id):
+            db_methods.delete_driver_by_id(driver_id)
+            return {"message": {"delete": f"Driver with id={driver_id} successfully deleted!"}}, 200
+        else:
+            return {"message": {"delete": f"Driver with id={driver_id} not found!"}}, 400
+
 
 class Vehicles(Resource):
     def get(self):
         vehicles = db_methods.get_all_vehicles()
         vehicles_list = []
         for vehicle in vehicles:
+            # vehicles_list.append({'id': vehicle.id, 'make': vehicle.make, 'model': vehicle.model,
+            #                       'plate_number': vehicle.plate_number, 'created_at': str(vehicle.start_date),
+            #                       'updated_at': str(vehicle.end_date)})
             vehicles_list.append({'id': vehicle.id, 'make': vehicle.make, 'model': vehicle.model,
-                                  'plate_number': vehicle.plate_number, 'created_at': str(vehicle.start_date),
-                                  'updated_at': str(vehicle.end_date)})
+                                  'plate_number': vehicle.plate_number})
         return {"message": {"vehicles": vehicles_list}}, 200
 
 
@@ -115,3 +125,10 @@ class Vehicle(Resource):
             return {"message": {"vehicle": vehicle_info}}, 200
         else:
             return {"message": {"vehicle": f"Vehicle with id={vehicle_id} not found"}}, 400
+
+    def delete(self, vehicle_id):
+        if db_methods.vehicle_exists(vehicle_id):
+            db_methods.delete_vehicle_by_id(vehicle_id)
+            return {"message": {"delete": f"Vehicle with id={vehicle_id} successfully deleted!"}}, 200
+        else:
+            return {"message": {"delete": f"Vehicle with id={vehicle_id} not found!"}}, 400

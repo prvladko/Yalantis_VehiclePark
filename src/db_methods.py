@@ -1,4 +1,5 @@
 from datetime import date
+
 from app import db
 from models import Driver, Vehicle
 
@@ -31,5 +32,23 @@ def get_driver_by_id(driver_id):
     return db.session.query(Driver).filter(Driver.id == driver_id).first()
 
 
-def get_vehicle_by_id(id_):
-    return db.session.query(Vehicle).filter(Vehicle.id == id_).first()
+def get_vehicle_by_id(vehicle_id):
+    return db.session.query(Vehicle).filter(Vehicle.id == vehicle_id).first()
+
+
+def driver_exists(driver_id):
+    return bool(db.session.query(Driver).filter(Driver.id == driver_id).count())
+
+
+def delete_driver_by_id(driver_id):
+    db.session.query(Driver).filter(Driver.id == driver_id).delete()
+    db.session.commit()
+
+
+def vehicle_exists(vehicle_id):
+    return bool(db.session.query(Vehicle).filter(Vehicle.id == vehicle_id).count())
+
+
+def delete_vehicle_by_id(vehicle_id):
+    db.session.query(Driver).filter(Vehicle.id == vehicle_id).delete()
+    db.session.commit()
