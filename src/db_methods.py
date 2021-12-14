@@ -52,3 +52,13 @@ def vehicle_exists(vehicle_id):
 def delete_vehicle_by_id(vehicle_id):
     db.session.query(Driver).filter(Vehicle.id == vehicle_id).delete()
     db.session.commit()
+
+
+def update_driver_info(driver_id, update_data):
+    db.session.query(Driver).filter(Driver.id == driver_id).update(update_data)
+    db.session.commit()
+
+
+def update_vehicle_info(vehicle_id, update_data):
+    db.session.query(Vehicle).filter(Vehicle.id == vehicle_id).update(update_data)
+    db.session.commit()

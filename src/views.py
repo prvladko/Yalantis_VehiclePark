@@ -101,6 +101,42 @@ class Driver(Resource):
         else:
             return {"message": {"delete": f"Driver with id={driver_id} not found!"}}, 400
 
+    def patch(self, driver_id):
+        parser = reqparse.RequestParser()
+        parser.add_argument('first_name', type=str)
+        parser.add_argument('last_name', type=str)
+        parser.add_argument('created_at', type=str,
+                            help='The date must be in the format: "%d-%m-%Y"\n Example: "14-12-2021"')
+        parser.add_argument('updated_at', type=str,
+                            help='The date must be in the format: "%d-%m-%Y"\n Example: "14-12-2021"')
+        args = parser.parse_args(strict=True)
+        update_data = {}
+        if args['first_name']:
+            update_data['first_name'] = args['first_name']
+        if args['last_name']:
+            update_data['last_name'] = args['last_name']
+
+        if args['created_at']:
+            try:
+                start_date = transfer_date(args['created_at'])
+                update_data['created_at'] = start_date
+            except ValueError as e:
+                return {"message": {
+                    "created_at": f'{e}\nThe date must be in the format: "%d-%m-%Y"\n Example: "14-12-2021"'}}, 400
+        if args['updated_at']:
+            try:
+                end_date = transfer_date(args['updated_at'])
+                update_data['updated_at'] = end_date
+            except ValueError as e:
+                return {"message": {
+                    "updated_at": f'{e}\nThe date must be in the format: "%d-%m-%Y"\n Example: "14-12-2021"'}}, 400
+        db_methods.update_driver_info(driver_id, update_data)
+        driver = db_methods.get_driver_by_id(driver_id)
+        driver_info = {'id': driver.id, 'first_name': driver.first_name, 'first_name': driver.first_name,
+                       'created_at': str(driver.start_date),
+                       'updated_at': str(driver.end_date)}
+        return {"message": {"driver": driver_info}}, 200
+
 
 class Vehicles(Resource):
     def get(self):
@@ -132,3 +168,43 @@ class Vehicle(Resource):
             return {"message": {"delete": f"Vehicle with id={vehicle_id} successfully deleted!"}}, 200
         else:
             return {"message": {"delete": f"Vehicle with id={vehicle_id} not found!"}}, 400
+
+    def patch(self, vehicle_id):
+        parser = reqparse.RequestParser()
+        parser.add_argument('make', type=str)
+        parser.add_argument('model', type=str)
+        parser.add_argument('plate_number', type=str)
+        parser.add_argument('created_at', type=str,
+                            help='The date must be in the format: "%d-%m-%Y"\n Example: "14-12-2021"')
+        parser.add_argument('updated_at', type=str,
+                            help='The date must be in the format: "%d-%m-%Y"\n Example: "14-12-2021"')
+        args = parser.parse_args(strict=True)
+        update_data = {}
+        if args['make']:
+            update_data['make'] = args['make']
+        if args['model']:
+            update_data['model'] = args['model']
+        if args['plate_number']:
+            update_data['plate_number'] = args['plate_number']
+
+        if args['created_at']:
+            try:
+                start_date = transfer_date(args['created_at'])
+                update_data['created_at'] = start_date
+            except ValueError as e:
+                return {"message": {
+                    "created_at": f'{e}\nThe date must be in the format: "%d-%m-%Y"\n Example: "14-12-2021"'}}, 400
+        if args['updated_at']:
+            try:
+                end_date = transfer_date(args['updated_at'])
+                update_data['updated_at'] = end_date
+            except ValueError as e:
+                return {"message": {
+                    "updated_at": f'{e}\nThe date must be in the format: "%d-%m-%Y"\n Example: "14-12-2021"'}}, 400
+        db_methods.update_vehicle_info(vehicle_id, update_data)
+        vehicle = db_methods.get_vehicle_by_id(vehicle_id)
+        vehicle_info = {'id': vehicle.id, 'make': vehicle.make, 'model': vehicle.model,
+                        'plate_number': vehicle.plate_number,
+                        'created_at': str(vehicle.start_date),
+                        'updated_at': str(vehicle.end_date)}
+        return {"message": {"vehicle": vehicle_info}}, 200
