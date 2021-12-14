@@ -1,5 +1,4 @@
 from datetime import date
-
 from app import db
 from models import Driver, Vehicle
 
@@ -18,3 +17,19 @@ def add_vehicle(driver_id: int, make: str, model: str, plate_number: str, create
     db.session.add(new_vehicle)
     db.session.commit()
     return new_vehicle.id
+
+
+def get_all_drivers():
+    return db.session.query(Driver).all()
+
+
+def get_all_vehicles():
+    return db.session.query(Vehicle).all()
+
+
+def get_driver_by_id(driver_id):
+    return db.session.query(Driver).filter(Driver.id == driver_id).first()
+
+
+def get_vehicle_by_id(id_):
+    return db.session.query(Vehicle).filter(Vehicle.id == id_).first()
