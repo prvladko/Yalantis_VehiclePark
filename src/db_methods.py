@@ -81,5 +81,15 @@ def find_drivers(filters: dict):
     return q.all()
 
 
-def find_vehicles(filters: dict):
+def find_vehicles(filters: dict):  # just for testing
     pass
+
+
+def delete_all_drivers():
+    db.session.query(Driver).delete()
+    db.session.commit()
+
+
+def delete_all_vehicles():
+    db.session.query(Vehicle).delete()
+    db.session.commit()

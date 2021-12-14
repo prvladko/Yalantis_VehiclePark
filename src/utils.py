@@ -4,14 +4,14 @@ from src.db_methods import driver_exists, vehicle_exists
 
 
 def transfer_date(raw_date: str) -> datetime.date:
-    """
-    Example:
-    "14-12-2021" => datetime(day=14, month=12, year=2021)
-    :param raw_date: str
-    :return: datetime.date
-    """
     date_obj = datetime.datetime.strptime(raw_date, '%d-%m-%Y').date()
     return date_obj
+
+
+# just for test
+def validate_dates(start_date, end_date):
+    if start_date > end_date:
+        abort(400, message={"message": {'date': f"The parameter start_date must be less than end_date"}})
 
 
 def abort_if_driver_doesnt_exist(driver_id):

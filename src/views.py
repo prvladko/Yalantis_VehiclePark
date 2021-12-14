@@ -1,7 +1,7 @@
-#from datetime import date
+# from datetime import date
 from flask_restful import Resource, reqparse
 from src import db_methods
-from src.utils import transfer_date, abort_if_driver_doesnt_exist, abort_if_vehicle_doesnt_exist
+from src.utils import transfer_date, abort_if_driver_doesnt_exist, abort_if_vehicle_doesnt_exist, validate_dates
 import datetime
 
 
@@ -18,7 +18,7 @@ class CreateDriver(Resource):
         parser.add_argument('created_at', type=transfer_date, required=True)
         parser.add_argument('updated_at', type=transfer_date, required=True)
         args = parser.parse_args(strict=True)
-
+        validate_dates(args["created_at"], args["updated_at"])
         driver_id = db_methods.add_driver(args['first_name'], args['last_name'],
                                           args['created_at'], args['updated_at'])
         return {"message": {'driver_id': driver_id, 'first_name': args['first_name'], 'last_name': args['last_name'],
@@ -38,7 +38,7 @@ class CreateVehicle(Resource):
         parser.add_argument('updated_at', type=datetime,
                             help='The date must be in the format: "%d-%m-%Y"\n Example: "14-12-2021"')
         args = parser.parse_args(strict=True)
-
+        validate_dates(args["created_at"], args["updated_at"])
         vehicle_id = db_methods.add_vehicle(args['make'], args['model'], args['plate_number'],
                                             args['created_at'], args['updated_at'])
         return {"message": {'vehicle_id': vehicle_id, 'make': args['make'], 'model': args['model'],
@@ -85,6 +85,16 @@ class Driver(Resource):
                 update_data[key] = value
         if len(update_data) == 0:
             return {"message": {"patch": "No arguments passed"}}, 400
+        # --- ValidateDates
+        start_date = args['created_at']
+        end_date = args['updated_at']
+        driver = db_methods.get_driver_by_id(driver_id)
+        if start_date is None:
+            start_date = driver.start_date
+        if end_date is None:
+            end_date = driver.end_date
+        validate_dates(start_date, end_date)
+
         db_methods.update_driver_info(driver_id, update_data)
         driver = db_methods.get_driver_by_id(driver_id)
         driver_info = {'id': driver.id, 'first_name': driver.first_name, 'last_name': driver.last_name,
@@ -134,6 +144,16 @@ class Vehicle(Resource):
                 update_data[key] = value
         if len(update_data) == 0:
             return {"message": {"patch": "No arguments passed"}}, 400
+        # --- ValidateDates
+        start_date = args['created_at']
+        end_date = args['updated_at']
+        vehicle = db_methods.get_vehicle_by_id(vehicle_id)
+        if start_date is None:
+            start_date = vehicle.start_date
+        if end_date is None:
+            end_date = vehicle.end_date
+        validate_dates(start_date, end_date)
+
         db_methods.update_vehicle_info(vehicle_id, update_data)
         vehicle = db_methods.get_vehicle_by_id(vehicle_id)
         vehicle_info = {'id': vehicle.id, 'make': vehicle.make, 'model': vehicle.model,
