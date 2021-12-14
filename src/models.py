@@ -4,7 +4,7 @@ from datetime import datetime
 
 class Driver(db.Model):
 
-    __tablename__ = 'drivers'  # may need changes
+    __tablename__ = 'drivers'
 
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(20), nullable=False)
@@ -27,13 +27,13 @@ class Driver(db.Model):
 
 class Vehicle(db.Model):
 
-    __tablename__ = 'vehicles'  # may need changes
+    __tablename__ = 'vehicles'
 
     id = db.Column(db.Integer, primary_key=True)
     driver_id = db.Column(db.Integer, db.ForeignKey('drivers.id'))
-    make = db.Column(db.String(40), nullable=False)  # nullable?
-    model = db.Column(db.String(80), nullable=False)
-    plate_number = db.Column(db.String(10), unique=True, nullable=False)  # example "AA 1234 OO"
+    make = db.Column(db.String(20), nullable=False)  # nullable?
+    model = db.Column(db.String(20), nullable=False)
+    plate_number = db.Column(db.String(8), unique=True, nullable=False)  # example "AA 1234 OO"
     created_at = db.Column(db.DateTime, default=datetime.now())  # server_default=db.func.now()
     updated_at = db.Column(db.DateTime, default=datetime.now(), onupdate=datetime.now())
 
