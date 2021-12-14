@@ -9,7 +9,7 @@ import datetime
 
 @app.route('/')
 def home():
-    return '<h1>Home page!</h1>'
+    return '<h1>Vehicle park Home page!</h1>'
 
 
 class CreateDriver(Resource):
@@ -17,34 +17,21 @@ class CreateDriver(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('first_name', type=str, required=True)
         parser.add_argument('last_name', type=str, required=True)
-        parser.add_argument('created_at', type=datetime,
-                            help='The date must be in the format: "%d-%m-%Y"\n Example: "14-12-2021"')
-        parser.add_argument('updated_at', type=datetime,
-                            help='The date must be in the format: "%d-%m-%Y"\n Example: "14-12-2021"')
+        parser.add_argument('created_at', type=transfer_date, required=True)
+        parser.add_argument('updated_at', type=transfer_date, required=True)
         args = parser.parse_args(strict=True)
-        first_name = args['first_name']
-        last_name = args['last_name']
 
-        try:
-            created_at = transfer_date(args['created_at'])
-        except ValueError as e:
-            return {"message": {
-                "created_at": f'{e}\nThe date must be in the format: "%d-%m-%Y"\n Example: "14-12-2021"'}}, 400
-        try:
-            updated_at = transfer_date(args['updated_at'])
-        except ValueError as e:
-            return {"message": {
-                "updated_at": f'{e}\nThe date must be in the format: "%d-%m-%Y"\n Example: "14-12-2021"'}}, 400
-
-        driver_id = db_methods.add_driver(first_name, last_name, created_at, updated_at)
-        return {"message": {'driver_id': driver_id, 'first_name': first_name, 'last_name': last_name,
-                            'created_at': str(created_at), 'updated_at': str(updated_at)}}, 201
+        driver_id = db_methods.add_driver(args['first_name'], args['last_name'],
+                                          args['created_at'], args['updated_at'])
+        return {"message": {'driver_id': driver_id, 'first_name': args['first_name'], 'last_name': args['last_name'],
+                            'created_at': str(args['created_at']),
+                            'updated_at': str(args['updated_at'])}}, 201
 
 
 class CreateVehicle(Resource):
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('driver_id', type=int, required=True)  # db.ForeignKey('driver.id')
+        parser.add_argument('driver_id', type=int, required=True)
         parser.add_argument('make', type=str, required=True)
         parser.add_argument('model', type=str, required=True)
         parser.add_argument('plate_number', type=str(8), unique=True, required=True)  # example "AA 1234 OO"
@@ -53,24 +40,13 @@ class CreateVehicle(Resource):
         parser.add_argument('updated_at', type=datetime,
                             help='The date must be in the format: "%d-%m-%Y"\n Example: "14-12-2021"')
         args = parser.parse_args(strict=True)
-        make = args['make']
-        model = args['model']
-        plate_number = args['plate_number']
 
-        try:
-            created_at = transfer_date(args['created_at'])
-        except ValueError as e:
-            return {"message": {
-                "created_at": f'{e}\nThe date must be in the format: "%d-%m-%Y"\n Example: "14-12-2021"'}}, 400
-        try:
-            updated_at: date = transfer_date(args['updated_at'])
-        except ValueError as e:
-            return {"message": {
-                "updated_at": f'{e}\nThe date must be in the format: "%d-%m-%Y"\n Example: "14-12-2021"'}}, 400
-
-        vehicle_id = db_methods.add_vehicle(make, model, plate_number, created_at, updated_at)
-        return {"message": {'id': vehicle_id, 'make': make, 'model': model, 'plate_number': plate_number,
-                            'created_at': str(created_at), 'updated_at': str(updated_at)}}, 201
+        vehicle_id = db_methods.add_vehicle(args['make'], args['model'], args['plate_number'],
+                                            args['created_at'], args['updated_at'])
+        return {"message": {'vehicle_id': vehicle_id, 'make': args['make'], 'model': args['model'],
+                            'plate_number': args['plate_number'],
+                            'created_at': str(args['created_at']),
+                            'updated_at': str(args['updated_at'])}}, 201
 
 
 class Drivers(Resource):
@@ -78,8 +54,6 @@ class Drivers(Resource):
         drivers = db_methods.get_all_drivers()
         drivers_list = []
         for driver in drivers:
-            # drivers_list.append({'id': driver.id, 'first_name': driver.first_name, 'last_name': driver.last_name,
-            #                      'created_at': str(driver.start_date), 'updated_at': str(driver.end_date)})
             drivers_list.append({'id': driver.id, 'first_name': driver.first_name, 'last_name': driver.last_name})
         return {"message": {"drivers": drivers_list}}, 200
 
@@ -105,34 +79,16 @@ class Driver(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('first_name', type=str)
         parser.add_argument('last_name', type=str)
-        parser.add_argument('created_at', type=str,
-                            help='The date must be in the format: "%d-%m-%Y"\n Example: "14-12-2021"')
-        parser.add_argument('updated_at', type=str,
-                            help='The date must be in the format: "%d-%m-%Y"\n Example: "14-12-2021"')
+        parser.add_argument('created_at', type=transfer_date)
+        parser.add_argument('updated_at', type=transfer_date)
         args = parser.parse_args(strict=True)
         update_data = {}
-        if args['first_name']:
-            update_data['first_name'] = args['first_name']
-        if args['last_name']:
-            update_data['last_name'] = args['last_name']
-
-        if args['created_at']:
-            try:
-                start_date = transfer_date(args['created_at'])
-                update_data['created_at'] = start_date
-            except ValueError as e:
-                return {"message": {
-                    "created_at": f'{e}\nThe date must be in the format: "%d-%m-%Y"\n Example: "14-12-2021"'}}, 400
-        if args['updated_at']:
-            try:
-                end_date = transfer_date(args['updated_at'])
-                update_data['updated_at'] = end_date
-            except ValueError as e:
-                return {"message": {
-                    "updated_at": f'{e}\nThe date must be in the format: "%d-%m-%Y"\n Example: "14-12-2021"'}}, 400
+        for key, value in args.items():
+            if value:
+                update_data[key] = value
         db_methods.update_driver_info(driver_id, update_data)
         driver = db_methods.get_driver_by_id(driver_id)
-        driver_info = {'id': driver.id, 'first_name': driver.first_name, 'first_name': driver.first_name,
+        driver_info = {'id': driver.id, 'first_name': driver.first_name, 'last_name': driver.last_name,
                        'created_at': str(driver.start_date),
                        'updated_at': str(driver.end_date)}
         return {"message": {"driver": driver_info}}, 200
@@ -143,9 +99,6 @@ class Vehicles(Resource):
         vehicles = db_methods.get_all_vehicles()
         vehicles_list = []
         for vehicle in vehicles:
-            # vehicles_list.append({'id': vehicle.id, 'make': vehicle.make, 'model': vehicle.model,
-            #                       'plate_number': vehicle.plate_number, 'created_at': str(vehicle.start_date),
-            #                       'updated_at': str(vehicle.end_date)})
             vehicles_list.append({'id': vehicle.id, 'make': vehicle.make, 'model': vehicle.model,
                                   'plate_number': vehicle.plate_number})
         return {"message": {"vehicles": vehicles_list}}, 200
@@ -174,33 +127,13 @@ class Vehicle(Resource):
         parser.add_argument('make', type=str)
         parser.add_argument('model', type=str)
         parser.add_argument('plate_number', type=str)
-        parser.add_argument('created_at', type=str,
-                            help='The date must be in the format: "%d-%m-%Y"\n Example: "14-12-2021"')
-        parser.add_argument('updated_at', type=str,
-                            help='The date must be in the format: "%d-%m-%Y"\n Example: "14-12-2021"')
+        parser.add_argument('created_at', type=transfer_date)
+        parser.add_argument('updated_at', type=transfer_date)
         args = parser.parse_args(strict=True)
         update_data = {}
-        if args['make']:
-            update_data['make'] = args['make']
-        if args['model']:
-            update_data['model'] = args['model']
-        if args['plate_number']:
-            update_data['plate_number'] = args['plate_number']
-
-        if args['created_at']:
-            try:
-                start_date = transfer_date(args['created_at'])
-                update_data['created_at'] = start_date
-            except ValueError as e:
-                return {"message": {
-                    "created_at": f'{e}\nThe date must be in the format: "%d-%m-%Y"\n Example: "14-12-2021"'}}, 400
-        if args['updated_at']:
-            try:
-                end_date = transfer_date(args['updated_at'])
-                update_data['updated_at'] = end_date
-            except ValueError as e:
-                return {"message": {
-                    "updated_at": f'{e}\nThe date must be in the format: "%d-%m-%Y"\n Example: "14-12-2021"'}}, 400
+        for key, value in args.items():
+            if value:
+                update_data[key] = value
         db_methods.update_vehicle_info(vehicle_id, update_data)
         vehicle = db_methods.get_vehicle_by_id(vehicle_id)
         vehicle_info = {'id': vehicle.id, 'make': vehicle.make, 'model': vehicle.model,
@@ -208,3 +141,49 @@ class Vehicle(Resource):
                         'created_at': str(vehicle.start_date),
                         'updated_at': str(vehicle.end_date)}
         return {"message": {"vehicle": vehicle_info}}, 200
+
+
+class FindDriver(Resource):
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('first_name', type=str, required=True)
+        parser.add_argument('last_name', type=str, required=True)
+        parser.add_argument('created_at[gte]', type=transfer_date)
+        parser.add_argument('created_at[lte]', type=transfer_date)
+        parser.add_argument('updated_at[gte]', type=transfer_date)
+        parser.add_argument('updated_at[lte]', type=transfer_date)
+
+        args = parser.parse_args(strict=True)
+        drivers = db_methods.find_drivers(args)
+        drivers_list = []
+        for driver in drivers:
+            drivers_list.append({'driver_id': driver.driver_id,
+                                 'first_name': driver.first_name,
+                                 'last_name': driver.last_name,
+                                 'start_date': str(driver.start_date),
+                                 'end_date': str(driver.end_date)})
+        return {"message": {"drivers": drivers_list}}
+
+
+class FindVehicle(Resource):
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('make', type=str, required=True)
+        parser.add_argument('model', type=str, required=True)
+        parser.add_argument('plate_number', type=str, required=True)
+        parser.add_argument('created_at[gte]', type=transfer_date)
+        parser.add_argument('created_at[lte]', type=transfer_date)
+        parser.add_argument('updated_at[gte]', type=transfer_date)
+        parser.add_argument('updated_at[lte]', type=transfer_date)
+
+        args = parser.parse_args(strict=True)
+        vehicles = db_methods.find_vehicles(args)
+        vehicles_list = []
+        for vehicle in vehicles:
+            vehicles_list.append({'vehicle_id': vehicle.vehicle_id,
+                                  'make': vehicle.make,
+                                  'model': vehicle.model,
+                                  'plate_number': vehicle.plate_number,
+                                  'created_at': str(vehicle.start_date),
+                                  'updated_at': str(vehicle.end_date)})
+        return {"message": {"vehicles": vehicles_list}}

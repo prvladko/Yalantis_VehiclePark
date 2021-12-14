@@ -28,37 +28,59 @@ def get_all_vehicles():
     return db.session.query(Vehicle).all()
 
 
-def get_driver_by_id(driver_id):
+def get_driver_by_id(driver_id: int):
     return db.session.query(Driver).filter(Driver.id == driver_id).first()
 
 
-def get_vehicle_by_id(vehicle_id):
+def get_vehicle_by_id(vehicle_id: int):
     return db.session.query(Vehicle).filter(Vehicle.id == vehicle_id).first()
 
 
-def driver_exists(driver_id):
+def driver_exists(driver_id: int) -> bool:
     return bool(db.session.query(Driver).filter(Driver.id == driver_id).count())
 
 
-def delete_driver_by_id(driver_id):
+def delete_driver_by_id(driver_id: int):
     db.session.query(Driver).filter(Driver.id == driver_id).delete()
     db.session.commit()
 
 
-def vehicle_exists(vehicle_id):
+def vehicle_exists(vehicle_id: int) -> bool:
     return bool(db.session.query(Vehicle).filter(Vehicle.id == vehicle_id).count())
 
 
-def delete_vehicle_by_id(vehicle_id):
+def delete_vehicle_by_id(vehicle_id: int):
     db.session.query(Driver).filter(Vehicle.id == vehicle_id).delete()
     db.session.commit()
 
 
-def update_driver_info(driver_id, update_data):
+def update_driver_info(driver_id: int, update_data: dict):
     db.session.query(Driver).filter(Driver.id == driver_id).update(update_data)
     db.session.commit()
 
 
-def update_vehicle_info(vehicle_id, update_data):
+def update_vehicle_info(vehicle_id: int, update_data: dict):
     db.session.query(Vehicle).filter(Vehicle.id == vehicle_id).update(update_data)
     db.session.commit()
+
+
+# + GET /drivers/driver/?created_at__gte=10-11-2021 - вивід списку водіїв, які створені після 10-11-2021
+# + GET /drivers/driver/?created_at__lte=16-11-2021 - вивід списку водіїв, котрі створені до 16-11-2021
+
+def find_drivers(filters: dict):
+    q = db.session.query(Driver).filter(Driver.first_name.like(f'%{filters["first_name"]}%'),
+                                        Driver.last_name.like(f'%{filters["last_name"]}%'))
+    if filters['start_date[gte]']:
+        q = q.filter(Driver.start_date >= filters['start_date[gte]'])
+    if filters['start_date[lte]']:
+        q = q.filter(Driver.start_date <= filters['start_date[lte]'])
+
+    if filters['end_date[gte]']:
+        q = q.filter(Driver.end_date >= filters['end_date[gte]'])
+    if filters['end_date[lte]']:
+        q = q.filter(Driver.end_date <= filters['end_date[lte]'])
+    return q.all()
+
+
+def find_vehicles(filters: dict):
+    pass
