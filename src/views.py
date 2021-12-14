@@ -3,13 +3,13 @@ from datetime import date
 from flask_restful import Resource, reqparse
 import db_methods
 from app import app
-from utils import transfer_date
+from utils import transfer_date, abort_if_driver_doesnt_exist, abort_if_vehicle_doesnt_exist
 import datetime
 
 
 @app.route('/')
 def home():
-    return '<h1>Vehicle park Home page!</h1>'
+    return '<h1>VehicleParkAPI Home page!</h1>'
 
 
 class CreateDriver(Resource):
@@ -31,7 +31,7 @@ class CreateDriver(Resource):
 class CreateVehicle(Resource):
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('driver_id', type=int, required=True)
+        parser.add_argument('driver_id', type=int, required=True)  # db.ForeignKey('driver.id')
         parser.add_argument('make', type=str, required=True)
         parser.add_argument('model', type=str, required=True)
         parser.add_argument('plate_number', type=str(8), unique=True, required=True)  # example "AA 1234 OO"
@@ -69,13 +69,12 @@ class Driver(Resource):
             return {"message": {"driver": f"Driver with id={driver_id} not found"}}, 400
 
     def delete(self, driver_id):
-        if db_methods.driver_exists(driver_id):
-            db_methods.delete_driver_by_id(driver_id)
-            return {"message": {"delete": f"Driver with id={driver_id} successfully deleted!"}}, 200
-        else:
-            return {"message": {"delete": f"Driver with id={driver_id} not found!"}}, 400
+        abort_if_driver_doesnt_exist(driver_id)
+        db_methods.delete_driver_by_id(driver_id)
+        return {"message": {"delete": f"Driver with id={driver_id} successfully deleted!"}}, 200
 
     def patch(self, driver_id):
+        abort_if_driver_doesnt_exist(driver_id)
         parser = reqparse.RequestParser()
         parser.add_argument('first_name', type=str)
         parser.add_argument('last_name', type=str)
@@ -86,6 +85,8 @@ class Driver(Resource):
         for key, value in args.items():
             if value:
                 update_data[key] = value
+        if len(update_data) == 0:
+            return {"message": {"patch": "No arguments passed"}}, 400
         db_methods.update_driver_info(driver_id, update_data)
         driver = db_methods.get_driver_by_id(driver_id)
         driver_info = {'id': driver.id, 'first_name': driver.first_name, 'last_name': driver.last_name,
@@ -116,13 +117,12 @@ class Vehicle(Resource):
             return {"message": {"vehicle": f"Vehicle with id={vehicle_id} not found"}}, 400
 
     def delete(self, vehicle_id):
-        if db_methods.vehicle_exists(vehicle_id):
-            db_methods.delete_vehicle_by_id(vehicle_id)
-            return {"message": {"delete": f"Vehicle with id={vehicle_id} successfully deleted!"}}, 200
-        else:
-            return {"message": {"delete": f"Vehicle with id={vehicle_id} not found!"}}, 400
+        abort_if_vehicle_doesnt_exist(vehicle_id)
+        db_methods.delete_vehicle_by_id(vehicle_id)
+        return {"message": {"delete": f"Vehicle with id={vehicle_id} successfully deleted!"}}, 200
 
     def patch(self, vehicle_id):
+        abort_if_vehicle_doesnt_exist(vehicle_id)
         parser = reqparse.RequestParser()
         parser.add_argument('make', type=str)
         parser.add_argument('model', type=str)
@@ -134,6 +134,8 @@ class Vehicle(Resource):
         for key, value in args.items():
             if value:
                 update_data[key] = value
+        if len(update_data) == 0:
+            return {"message": {"patch": "No arguments passed"}}, 400
         db_methods.update_vehicle_info(vehicle_id, update_data)
         vehicle = db_methods.get_vehicle_by_id(vehicle_id)
         vehicle_info = {'id': vehicle.id, 'make': vehicle.make, 'model': vehicle.model,
@@ -166,24 +168,4 @@ class FindDriver(Resource):
 
 
 class FindVehicle(Resource):
-    def get(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument('make', type=str, required=True)
-        parser.add_argument('model', type=str, required=True)
-        parser.add_argument('plate_number', type=str, required=True)
-        parser.add_argument('created_at[gte]', type=transfer_date)
-        parser.add_argument('created_at[lte]', type=transfer_date)
-        parser.add_argument('updated_at[gte]', type=transfer_date)
-        parser.add_argument('updated_at[lte]', type=transfer_date)
-
-        args = parser.parse_args(strict=True)
-        vehicles = db_methods.find_vehicles(args)
-        vehicles_list = []
-        for vehicle in vehicles:
-            vehicles_list.append({'vehicle_id': vehicle.vehicle_id,
-                                  'make': vehicle.make,
-                                  'model': vehicle.model,
-                                  'plate_number': vehicle.plate_number,
-                                  'created_at': str(vehicle.start_date),
-                                  'updated_at': str(vehicle.end_date)})
-        return {"message": {"vehicles": vehicles_list}}
+    pass
