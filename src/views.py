@@ -1,15 +1,13 @@
-from datetime import date
-
+#from datetime import date
 from flask_restful import Resource, reqparse
-import db_methods
-from app import app
-from utils import transfer_date, abort_if_driver_doesnt_exist, abort_if_vehicle_doesnt_exist
+from src import db_methods
+from src.utils import transfer_date, abort_if_driver_doesnt_exist, abort_if_vehicle_doesnt_exist
 import datetime
 
 
-@app.route('/')
-def home():
-    return '<h1>VehicleParkAPI Home page!</h1>'
+class Home(Resource):
+    def get(self):
+        return {"message": "VehicleParkAPI home page"}
 
 
 class CreateDriver(Resource):

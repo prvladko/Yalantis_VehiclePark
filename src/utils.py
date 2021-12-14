@@ -1,6 +1,6 @@
 import datetime
 from flask_restful import abort
-from db_methods import driver_exists, vehicle_exists
+from src.db_methods import driver_exists, vehicle_exists
 
 
 def transfer_date(raw_date: str) -> datetime.date:

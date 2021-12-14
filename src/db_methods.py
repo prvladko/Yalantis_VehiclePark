@@ -1,7 +1,6 @@
 from datetime import date
-
-from app import db
-from models import Driver, Vehicle
+from src.app import db
+from src.models import Driver, Vehicle
 
 
 def add_driver(first_name: str, last_name: str, created_at: date, updated_at: date) -> int:
