@@ -50,6 +50,8 @@ class Drivers(Resource):
         drivers = db_methods.get_all_drivers()
         drivers_list = []
         for driver in drivers:
+            # drivers_list.append({'id': driver.id, 'first_name': driver.first_name, 'last_name': driver.last_name,
+            #                      'created_at': str(driver.start_date), 'updated_at': str(driver.end_date)})
             drivers_list.append({'id': driver.id, 'first_name': driver.first_name, 'last_name': driver.last_name})
         return {"message": {"drivers": drivers_list}}, 200
 
@@ -96,8 +98,8 @@ class Driver(Resource):
         db_methods.update_driver_info(driver_id, update_data)
         driver = db_methods.get_driver_by_id(driver_id)
         driver_info = {'id': driver.id, 'first_name': driver.first_name, 'last_name': driver.last_name,
-                       'created_at': str(driver.created_at),
-                       'updated_at': str(driver.updated_at)}
+                       'created_at': str(driver.created_at),  # change "end_date" to 'created_at'
+                       'updated_at': str(driver.updated_at)}  # change "end_date" to 'updated_at'
         return {"message": {"driver": driver_info}}, 200
 
 
@@ -106,6 +108,9 @@ class Vehicles(Resource):
         vehicles = db_methods.get_all_vehicles()
         vehicles_list = []
         for vehicle in vehicles:
+            # vehicles_list.append({'id': vehicle.id, 'make': vehicle.make, 'model': vehicle.model,
+            #                       'plate_number': vehicle.plate_number, 'created_at': str(vehicle.start_date),
+            #                       'updated_at': str(vehicle.end_date)})
             vehicles_list.append({'id': vehicle.id, 'make': vehicle.make, 'model': vehicle.model,
                                   'plate_number': vehicle.plate_number})
         return {"message": {"vehicles": vehicles_list}}, 200
@@ -156,8 +161,8 @@ class Vehicle(Resource):
         vehicle = db_methods.get_vehicle_by_id(vehicle_id)
         vehicle_info = {'id': vehicle.id, 'make': vehicle.make, 'model': vehicle.model,
                         'plate_number': vehicle.plate_number,
-                        'created_at': str(vehicle.created_at),
-                        'updated_at': str(vehicle.updated_at)}
+                        'created_at': str(vehicle.created_at),  # change "start_date" to 'created_at'
+                        'updated_at': str(vehicle.updated_at)}  # change "end_date" to 'updated_at'
         return {"message": {"vehicle": vehicle_info}}, 200
 
 
@@ -178,31 +183,48 @@ class FindDriver(Resource):
             drivers_list.append({'driver_id': driver.driver_id,
                                  'first_name': driver.first_name,
                                  'last_name': driver.last_name,
-                                 'created_at': str(driver.created_at),
-                                 'updated_at': str(driver.updated_at)})
+                                 'created_at': str(driver.created_at),  # change "start_date" to 'created_at'
+                                 'updated_at': str(driver.updated_at)})  # change "end_date" to 'updated_at'
         return {"message": {"drivers": drivers_list}}
 
 
-# for test
+# class FindVehicle(Resource):
+#     def get(self):
+#         parser = reqparse.RequestParser()
+#         parser.add_argument('make', type=str, required=True)
+#         parser.add_argument('model', type=str, required=True)
+#         parser.add_argument('plate_number', type=str, required=True)
+#         parser.add_argument('created_at[gte]', type=transfer_date)
+#         parser.add_argument('created_at[lte]', type=transfer_date)
+#         parser.add_argument('updated_at[gte]', type=transfer_date)
+#         parser.add_argument('updated_at[lte]', type=transfer_date)
+#
+#         args = parser.parse_args(strict=True)
+#         vehicles = db_methods.find_vehicles(args)
+#         vehicles_list = []
+#         for vehicle in vehicles:
+#             vehicles_list.append({'vehicle_id': vehicle.vehicle_id,
+#                                   'make': vehicle.make,
+#                                   'model': vehicle.model,
+#                                   'plate_number': vehicle.plate_number,
+#                                   'created_at': str(vehicle.created_at),  # change "start_date" to 'created_at'
+#                                   'updated_at': str(vehicle.updated_at)})  # change "end_date" to 'updated_at'
+#         return {"message": {"vehicles": vehicles_list}}
+
 class FindVehicle(Resource):
     def get(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('make', type=str, required=True)
-        parser.add_argument('model', type=str, required=True)
         parser.add_argument('plate_number', type=str, required=True)
-        parser.add_argument('created_at[gte]', type=transfer_date)
-        parser.add_argument('created_at[lte]', type=transfer_date)
-        parser.add_argument('updated_at[gte]', type=transfer_date)
-        parser.add_argument('updated_at[lte]', type=transfer_date)
+        parser.add_argument('start_date[gte]', type=transfer_date)
+        parser.add_argument('start_date[lte]', type=transfer_date)
+        parser.add_argument('end_date[gte]', type=transfer_date)
+        parser.add_argument('end_date[lte]', type=transfer_date)
 
         args = parser.parse_args(strict=True)
         vehicles = db_methods.find_vehicles(args)
         vehicles_list = []
         for vehicle in vehicles:
-            vehicles_list.append({'vehicle_id': vehicle.vehicle_id,
-                                  'make': vehicle.make,
-                                  'model': vehicle.model,
-                                  'plate_number': vehicle.plate_number,
-                                  'created_at': str(vehicle.created_at),
-                                  'updated_at': str(vehicle.updated_at)})
+            vehicles_list.append({'id': vehicle.id, 'plate_number': vehicle.plate_number,
+                                  'start_date': str(vehicle.start_date), 'end_date': str(vehicle.end_date)})
         return {"message": {"vehicles": vehicles_list}}
+    
