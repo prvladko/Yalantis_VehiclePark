@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from src.app import db, create_app
-import src.models
 from src.config import ProdConfiguration
 
 

@@ -8,7 +8,7 @@ class ProdConfiguration(object):
     SECRET_KEY = os.getenv('secret_key')
     # To avoid displaying a warning when the server starts
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///data.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///drivers.db'
 
 
 class TestConfiguration(object):

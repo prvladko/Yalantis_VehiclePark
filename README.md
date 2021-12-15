@@ -57,7 +57,7 @@ Field | Type
   ```python
 import requests
 
-data = {'first_name': 'Driver1', 'last_name': 'Lastname1', 'created_at': '01-01-2018', 'updated_at': '30-01-2018'}
+data = {"first_name": "Driver1", "last_name": "Lastname1", "created_at": "01-01-2018", "updated_at": "30-01-2018"}
 r = requests.post('http://localhost:5000/drivers/driver/', data=data)
   ```
 </details>
@@ -83,7 +83,7 @@ Field | Type
   ```python
 import requests
 
-data = {'make': 'BMW', 'model': 'X5', 'plate_number': 'AA 1234 OO','created_at': '01-01-2018', 'updated_at': '30-01-2018'}
+data = {"make": "1995", "model": "BMW X5", "plate_number": "AA1234OO","created_at": "01-01-2018", "updated_at": "30-01-2018"}
 r = requests.post('http://localhost:5000/vehicle/vehicles/', data=data)
   ```
 </details>
@@ -96,7 +96,7 @@ r = requests.post('http://localhost:5000/vehicle/vehicles/', data=data)
 
 ### - 📌 GET **/vehicles/vehicle/{***vehicle_id***}** - ***endpoint for viewing detailed information about the vehicle***
 
-### - 📌 PATCH **/drivers/driver/{***driver_id***}** - ***endpoint for update driver information***
+### - 📌 PUT **/drivers/driver/{***driver_id***}** - ***endpoint for update driver information***
 
 <details>
   <summary>👀DETAILS. Click to expand!</summary>
@@ -117,7 +117,7 @@ Field | Type
   ```python
 import requests
 
-data = {'first_name': 'Driver1', 'last_name': 'Lastname1', 'created_at': '01-01-2018', 'updated_at': '30-01-2018'}
+data = {"first_name": "Driver1", "last_name": "Lastname1"}
 r = requests.patch('http://localhost:5000/drivers/driver/1', data=data)
   ```
 
@@ -145,7 +145,7 @@ Field | Type
   ```python
 import requests
 
-data = {'make': 'BMW', 'model': 'X5', 'plate_number': 'AA 1234 OO', 'created_at': '01-01-2018', 'updated_at': '30-01-2018'}
+data = {"make": "1995", "model": "BMW X5", "plate_number": "AA1234OO"}
 r = requests.patch('http://localhost:5000/vehicles/vehicle/1', data=data)
   ```
 
@@ -155,7 +155,7 @@ r = requests.patch('http://localhost:5000/vehicles/vehicle/1', data=data)
 
 ### - 📌 DELETE **/vehicles/vehicle/{***vehicle_id***}** - ***endpoint to delete a driver***
 
-### - 📌 GET **/drivers/drivers/filter_gte** - ***endpoint to display the list of drivers that were created after 10-11-2021***
+### - 📌 GET **/drivers/drivers/** - ***endpoint to display the list of drivers that were created after 10-11-2021***
 
 <details>
   <summary>👀DETAILS. Click to expand!</summary>
@@ -173,13 +173,12 @@ Field | Type
   ```python
 import requests
 
-data = {'first_name': 'Driver1', 'last_name': 'Lastname1', 'created_at[gte]': '10-10-2020'}
-r = requests.get('http://localhost:5000/drivers/driver/filter_gte', data=data)
+r = requests.get('/drivers/driver/?created_at__gte=10-11-2021')
   ```
 
 </details>
 
-### - 📌 GET **/drivers/drivers/filter_lte** - ***endpoint to display the list of drivers that were created before 16-11-2021***
+### - 📌 GET **/drivers/drivers/** - ***endpoint to display the list of drivers that were created before 16-11-2021***
 
 <details>
   <summary>👀DETAILS. Click to expand!</summary>
@@ -197,8 +196,8 @@ Field | Type
   ```python
 import requests
 
-data = {'first_name': 'Driver1', 'last_name': 'Lastname1', 'created_at[lte]': '14-12-2021'}
-r = requests.get('http://localhost:5000/drivers/driver/filter_lte', data=data)
+data = {"first_name": "Driver1", "last_name": "Lastname1", "created_at__lte": "14-12-2021"}
+r = requests.get('/drivers/driver/?created_at__lte=16-11-2021', data=data)
   ```
 
 </details>
