@@ -1,10 +1,17 @@
+from datetime import datetime
+
 from flask import Flask
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 
 # from src.config import Configuration
+from src import db_methods
 
 db = SQLAlchemy()
+
+
+def toDate(dateString):
+    return datetime.strptime(dateString, "%Y-%m-%d").date()
 
 
 def create_app(Configuration):
@@ -22,7 +29,12 @@ def create_app(Configuration):
     api.add_resource(views.Vehicles, '/vehicles/vehicle/')
 
     api.add_resource(views.FindDriver, '/drivers/driver/search')
-    # api.add_resource(views.FindVehicle, '/vehicles/vehicle/search')  # no need, just for test
+    api.add_resource(views.FindVehicle, '/vehicles/vehicle/search')  # no need, just for test
+    # api.add_resource(views.FindVehicle_gte, '/vehicles/vehicle/search_gte/created_at__gte=' +
+    #                  db_methods.find_vehicles_gte(datetime.strptime("16/11/21", "%d/%m/%y")))
+    # # ?created_at__gte=10-11-2021
+    # api.add_resource(views.FindVehicle_lte, '/vehicles/vehicle/search_lte',
+    #                  default=datetime.date, type=toDate)  # ?created_at__lte=16-11-2021
 
     api.add_resource(views.Home, '/')
 

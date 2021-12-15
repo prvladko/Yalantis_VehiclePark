@@ -1,9 +1,9 @@
-from datetime import date
+from datetime import date, datetime
 from src.app import db
 from src.models import Driver, Vehicle
 
 
-def add_driver(first_name: str, last_name: str, created_at: date, updated_at: date) -> int:
+def add_driver(first_name: str, last_name: str, created_at: datetime.now(), updated_at: datetime.now()) -> int:
     new_driver = Driver(first_name=first_name, last_name=last_name,
                         created_at=created_at, updated_at=updated_at)
     db.session.add(new_driver)
@@ -11,7 +11,8 @@ def add_driver(first_name: str, last_name: str, created_at: date, updated_at: da
     return new_driver.id
 
 
-def add_vehicle(driver_id: int, make: str, model: str, plate_number: str, created_at: date, updated_at: date) -> int:
+def add_vehicle(driver_id: int, make: str, model: str, plate_number: str,
+                created_at: datetime.now(), updated_at: datetime.now()) -> int:
     new_vehicle = Vehicle(driver_id=driver_id, make=make, model=model, plate_number=plate_number,
                           created_at=created_at, updated_at=updated_at)
     db.session.add(new_vehicle)
@@ -82,18 +83,35 @@ def find_drivers(filters: dict):
 
 
 def find_vehicles(filters: dict):  # just for testing
-    q = db.session.query(Vehicle).filter(Vehicle.make.like(f'%{filters["make"]}%'),
-                                         Vehicle.model.like(f'%{filters["model"]}%'),
-                                         Vehicle.plate_number.like(f'%{filters["plate_number"]}%'))
+    # q = db.session.query(Vehicle).filter(Vehicle.make.like(f'%{filters["make"]}%'),
+    #                                      Vehicle.model.like(f'%{filters["model"]}%'),
+    #                                      Vehicle.plate_number.like(f'%{filters["plate_number"]}%'))
+    q = db.session.query(Vehicle).filter()
     if filters['created_at[gte]']:
         q = q.filter(Vehicle.created_at >= filters['created_at[gte]'])
-    if filters['start_date[lte]']:
+    if filters['created_at[lte]']:
         q = q.filter(Vehicle.created_at <= filters['created_at[lte]'])
+    #
+    # if filters['updated_at[gte]']:
+    #     q = q.filter(Vehicle.updated_at >= filters['updated_at[gte]'])
+    # if filters['updated_at[lte]']:
+    #     q = q.filter(Vehicle.updated_at <= filters['updated_at[lte]'])
+    return q.all()
 
-    if filters['updated_at[gte]']:
-        q = q.filter(Vehicle.updated_at >= filters['updated_at[gte]'])
-    if filters['updated_at[lte]']:
-        q = q.filter(Vehicle.updated_at <= filters['updated_at[lte]'])
+
+def find_vehicles_gte(filters: date):
+    dt = datetime.strptime("10/11/21", "%d/%m/%y")
+    q = db.session.query(Vehicle).filter()
+    if filters:
+        q = q.filter(Vehicle.created_at >= dt)
+    return q.all()
+
+
+def find_vehicles_lte(filters: date):
+    dt = datetime.strptime("16/11/21", "%d/%m/%y")
+    q = db.session.query(Vehicle).filter()
+    if filters:
+        q = q.filter(Vehicle.created_at <= dt)
     return q.all()
 
 

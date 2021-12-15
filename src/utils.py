@@ -2,6 +2,7 @@ import datetime
 from flask_restful import abort
 from src.db_methods import driver_exists, vehicle_exists
 
+
 # converts the string to datetime
 def transfer_date(raw_date: str) -> datetime.date:
     date_obj = datetime.datetime.strptime(raw_date, '%d-%m-%Y').date()
@@ -9,9 +10,9 @@ def transfer_date(raw_date: str) -> datetime.date:
 
 
 # just for test
-def validate_dates(start_date, end_date):
-    if start_date > end_date:
-        abort(400, message={"message": {'date': f"The parameter start_date must be less than end_date"}})
+def validate_dates(created_at, updated_at):
+    if created_at > updated_at:
+        abort(400, message={"message": {'date': f"The parameter created_at must be less than updated_at"}})
 
 
 def abort_if_driver_doesnt_exist(driver_id):

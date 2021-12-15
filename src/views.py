@@ -187,9 +187,9 @@ class FindDriver(Resource):
 class FindVehicle(Resource):
     def get(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('make', type=str, required=True)
-        parser.add_argument('model', type=str, required=True)
-        parser.add_argument('plate_number', type=str, required=True)
+        parser.add_argument('make', type=str)
+        parser.add_argument('model', type=str)
+        parser.add_argument('plate_number', type=str)
         parser.add_argument('created_at[gte]', type=transfer_date)
         parser.add_argument('created_at[lte]', type=transfer_date)
         parser.add_argument('updated_at[gte]', type=transfer_date)
@@ -199,7 +199,53 @@ class FindVehicle(Resource):
         vehicles = db_methods.find_vehicles(args)
         vehicles_list = []
         for vehicle in vehicles:
-            vehicles_list.append({'vehicle_id': vehicle.vehicle_id,
+            vehicles_list.append({'vehicle_id': vehicle.id,
+                                  'make': vehicle.make,
+                                  'model': vehicle.model,
+                                  'plate_number': vehicle.plate_number,
+                                  'created_at': str(vehicle.created_at),
+                                  'updated_at': str(vehicle.updated_at)})
+        return {"message": {"vehicles": vehicles_list}}
+
+class FindVehicle_gte(Resource):
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('make', type=str)
+        parser.add_argument('model', type=str)
+        parser.add_argument('plate_number', type=str)
+        parser.add_argument('created_at[gte]', type=transfer_date)
+        # parser.add_argument('created_at[lte]', type=transfer_date)
+        # parser.add_argument('updated_at[gte]', type=transfer_date)
+        # parser.add_argument('updated_at[lte]', type=transfer_date)
+
+        args = parser.parse_args(strict=True)
+        vehicles = db_methods.find_vehicles_gte(args)
+        vehicles_list = []
+        for vehicle in vehicles:
+            vehicles_list.append({'vehicle_id': vehicle.id,
+                                  'make': vehicle.make,
+                                  'model': vehicle.model,
+                                  'plate_number': vehicle.plate_number,
+                                  'created_at': str(vehicle.created_at),
+                                  'updated_at': str(vehicle.updated_at)})
+        return {"message": {"vehicles": vehicles_list}}
+
+class FindVehicle_lte(Resource):
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('make', type=str)
+        parser.add_argument('model', type=str)
+        parser.add_argument('plate_number', type=str)
+        # parser.add_argument('created_at[gte]', type=transfer_date)
+        parser.add_argument('created_at[lte]', type=transfer_date)
+        # parser.add_argument('updated_at[gte]', type=transfer_date)
+        # parser.add_argument('updated_at[lte]', type=transfer_date)
+
+        args = parser.parse_args(strict=True)
+        vehicles = db_methods.find_vehicles_lte(args)
+        vehicles_list = []
+        for vehicle in vehicles:
+            vehicles_list.append({'vehicle_id': vehicle.id,
                                   'make': vehicle.make,
                                   'model': vehicle.model,
                                   'plate_number': vehicle.plate_number,
