@@ -3,7 +3,6 @@ from datetime import datetime
 
 
 class Driver(db.Model):
-
     __tablename__ = 'drivers'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -12,7 +11,7 @@ class Driver(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.now())
     updated_at = db.Column(db.DateTime, default=datetime.now(), onupdate=datetime.now())
     vehicle = db.relationship('Vehicle', backref='driver', uselist=False)
-    #vehicle = db.Column(db.Integer, db.ForeignKey('vehicle_data.id'))
+    # vehicle = db.Column(db.Integer, db.ForeignKey('vehicle_data.id'))
 
     def init(self, first_name, last_name):
         self.first_name = first_name
@@ -26,7 +25,6 @@ class Driver(db.Model):
 
 
 class Vehicle(db.Model):
-
     __tablename__ = 'vehicles'
 
     id = db.Column(db.Integer, primary_key=True)

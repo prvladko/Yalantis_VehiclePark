@@ -183,6 +183,31 @@ class FindDriver(Resource):
         return {"message": {"drivers": drivers_list}}
 
 
+# *********************************************************
+class GetDrivers(Resource):
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('first_name', type=str, required=True)
+        parser.add_argument('last_name', type=str, required=True)
+        parser.add_argument('created_at[gte]', type=transfer_date)
+        parser.add_argument('created_at[lte]', type=transfer_date)
+        parser.add_argument('updated_at[gte]', type=transfer_date)
+        parser.add_argument('updated_at[lte]', type=transfer_date)
+
+        args = parser.parse_args(strict=True)
+        drivers = db_methods.get_drivers()
+        drivers_list = []
+        for driver in drivers:
+            drivers_list.append({'driver_id': driver.id,
+                                 'first_name': driver.first_name,
+                                 'last_name': driver.last_name,
+                                 'created_at': str(driver.created_at),
+                                 'updated_at': str(driver.updated_at)})
+        return {"message": {"drivers": drivers_list}}
+
+
+# *********************************************************
+
 # for test
 class FindVehicle(Resource):
     def get(self):
@@ -207,6 +232,7 @@ class FindVehicle(Resource):
                                   'updated_at': str(vehicle.updated_at)})
         return {"message": {"vehicles": vehicles_list}}
 
+
 class FindVehicle_gte(Resource):
     def get(self):
         parser = reqparse.RequestParser()
@@ -229,6 +255,7 @@ class FindVehicle_gte(Resource):
                                   'created_at': str(vehicle.created_at),
                                   'updated_at': str(vehicle.updated_at)})
         return {"message": {"vehicles": vehicles_list}}
+
 
 class FindVehicle_lte(Resource):
     def get(self):

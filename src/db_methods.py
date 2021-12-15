@@ -2,6 +2,8 @@ from datetime import date, datetime
 from src.app import db
 from src.models import Driver, Vehicle
 
+from flask import jsonify, request
+
 
 def add_driver(first_name: str, last_name: str, created_at: datetime.now(), updated_at: datetime.now()) -> int:
     new_driver = Driver(first_name=first_name, last_name=last_name,
@@ -113,6 +115,30 @@ def find_vehicles_lte(filters: date):
     if filters:
         q = q.filter(Vehicle.created_at <= dt)
     return q.all()
+
+
+# *************************************************************************
+def get_drivers() -> dict:
+    """Return drivers"""
+    args = request.args
+    if args:
+        if args.get('created_at__gte'):
+            query_date = args.get('created_at__gte')
+            datetime_obj = datetime.strptime(query_date, "%d-%m-%Y")
+            drivers = Driver.query.filter(Driver.created_at >= datetime_obj)
+            return jsonify({'drivers': [driver.to_json() for driver in drivers]})
+
+        elif args.get('created_at__lte'):
+            query_date = args.get('created_at__lte')
+            datetime_obj = datetime.strptime(query_date, "%d-%m-%Y")
+            drivers = Driver.query.filter(Driver.created_at <= datetime_obj)
+            return jsonify({'drivers': [driver.to_json() for driver in drivers]})
+
+    drivers = Driver.query.all()
+    return jsonify({'drivers': [driver.to_json() for driver in drivers]})
+
+
+# *************************************************************************
 
 
 def delete_all_drivers():

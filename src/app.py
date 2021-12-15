@@ -29,12 +29,10 @@ def create_app(Configuration):
     api.add_resource(views.Vehicles, '/vehicles/vehicle/')
 
     api.add_resource(views.FindDriver, '/drivers/driver/search')
+    api.add_resource(views.GetDrivers, '/drivers/driver/')
     api.add_resource(views.FindVehicle, '/vehicles/vehicle/search')  # no need, just for test
-    # api.add_resource(views.FindVehicle_gte, '/vehicles/vehicle/search_gte/created_at__gte=' +
-    #                  db_methods.find_vehicles_gte(datetime.strptime("16/11/21", "%d/%m/%y")))
-    # # ?created_at__gte=10-11-2021
-    # api.add_resource(views.FindVehicle_lte, '/vehicles/vehicle/search_lte',
-    #                  default=datetime.date, type=toDate)  # ?created_at__lte=16-11-2021
+    api.add_resource(views.FindVehicle_gte, '/vehicles/vehicle/')  # ?created_at__gte=10-11-2021
+    api.add_resource(views.FindVehicle_lte, '/vehicles/vehicle/')  # ?created_at__lte=16-11-2021
 
     api.add_resource(views.Home, '/')
 
