@@ -3,7 +3,7 @@ atomicwrites==1.4.0
 attrs==20.3.0
 click==7.1.2
 colorama==0.4.4
-Flask==1.1.2
+Flask==2.0.2
 Flask-RESTful==0.3.8
 Flask-SQLAlchemy==2.5.1
 greenlet==1.0.0
