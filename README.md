@@ -118,12 +118,12 @@ Field | Type
 import requests
 
 data = {"first_name": "Driver1", "last_name": "Lastname1"}
-r = requests.patch('http://localhost:5000/drivers/driver/1', data=data)
+r = requests.put('http://localhost:5000/drivers/driver/1', data=data)
   ```
 
 </details>
 
-### - 📌 PATCH **/vehicles/vehicle/{***vehicle_id***}** - ***endpoint for update vehicle information***
+### - 📌 PUT **/vehicles/vehicle/{***vehicle_id***}** - ***endpoint for update vehicle information***
 
 <details>
   <summary>👀DETAILS. Click to expand!</summary>
@@ -146,7 +146,7 @@ Field | Type
 import requests
 
 data = {"make": "1995", "model": "BMW X5", "plate_number": "AA1234OO"}
-r = requests.patch('http://localhost:5000/vehicles/vehicle/1', data=data)
+r = requests.put('http://localhost:5000/vehicles/vehicle/1', data=data)
   ```
 
 </details>
