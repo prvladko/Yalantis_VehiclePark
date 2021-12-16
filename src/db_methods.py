@@ -1,6 +1,8 @@
 # from datetime import date, datetime
-# from src.app import db
-# from src.models import Driver, Vehicle
+from src.app import db
+from src.models import Driver, Vehicle
+
+
 #
 # from flask import jsonify, request
 #
@@ -102,12 +104,12 @@
 #     return jsonify({'drivers': [driver.to_json() for driver in drivers]})
 #
 #
-# # *************************************************************************
-# def delete_all_drivers():
-#     db.session.query(Driver).delete()
-#     db.session.commit()
-#
-#
+# *************************************************************************
+def delete_all_drivers():
+    db.session.query(Driver).delete()
+    db.session.commit()
+
+
 # def delete_all_vehicles():
 #     db.session.query(Vehicle).delete()
 #     db.session.commit()
