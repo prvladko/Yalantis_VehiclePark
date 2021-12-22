@@ -38,6 +38,12 @@ data = [({'first_name': 'Name1', 'last_name': 'Lastname1', 'created_at': '2018-0
          ),
         ]
 
+# vehicle_data = [({'model': 'Model1', 'mark': 'BMW X6', 'make': '2002', created_at': '2018-01-01', 'updated_at': '2020-01-01'},
+#          400,
+#          'date',
+#          'The parameter created_at must be less than updated_at'),
+#         ]
+
 @pytest.mark.parametrize("data, expected_status_code, key_in_response, expected_response", data)
 def test_create_driver_incorrect_data(test_client, data, expected_status_code, key_in_response, expected_response):
     r = test_client.post('/drivers/driver', data=data)
@@ -59,8 +65,8 @@ def test_drivers(test_client):
     assert type(data['message']['drivers']) == list
 
 
-def test_vehicles(test_client):
-    response = test_client.get('/vehicles/vehicle')
-    data = json.loads(response.get_data(as_text=True))
-    assert response.status_code == 200
-    assert type(data['message']['vehicles']) == list
+# def test_vehicles(test_client):
+#     response = test_client.get('/vehicles/vehicle')
+#     data = json.loads(response.get_data(as_text=True))
+#     assert response.status_code == 200
+#     assert type(data['message']['vehicles']) == list
