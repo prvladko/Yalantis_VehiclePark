@@ -38,16 +38,9 @@ data = [({'first_name': 'Name1', 'last_name': 'Lastname1', 'created_at': '2018-0
          ),
         ]
 
-
 @pytest.mark.parametrize("data, expected_status_code, key_in_response, expected_response", data)
 def test_create_driver_incorrect_data(test_client, data, expected_status_code, key_in_response, expected_response):
     r = test_client.post('/drivers/driver', data=data)
-    response = json.loads(r.get_data(as_text=True))
-    assert r.status_code == expected_status_code
-    assert response['message'][key_in_response] == expected_response
-
-def test_create_vehicle_incorrect_data(test_client, data, expected_status_code, key_in_response, expected_response):
-    r = test_client.post('/vehicles/vehicle', data=data)
     response = json.loads(r.get_data(as_text=True))
     assert r.status_code == expected_status_code
     assert response['message'][key_in_response] == expected_response
